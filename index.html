@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Django-smartdbstorage by dperetti</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Django-smartdbstorage</h1>
+        <p>A Django model-based File Storage</p>
+
+        <p class="view"><a href="https://github.com/dperetti/Django-SmartDBStorage">View the Project on GitHub <small>dperetti/Django-SmartDBStorage</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/dperetti/Django-SmartDBStorage/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/dperetti/Django-SmartDBStorage/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/dperetti/Django-SmartDBStorage">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>SmartDBStorage is a File Storage for Django that stores files in the
+database using Django Models.</p>
+
+<p>When the attachments or images are as important as the other data, you
+may want to store them in the database for better integrity and
+consistency.</p>
+
+<p>For example, this is specially useful to store original pictures which
+are displayed using <a href="https://github.com/sorl/sorl-thumbnail">sorl thumbnail</a>.</p>
+
+<p>Advantages : everything at the same place, no more broken links, better
+flexibility. Disadvantages : performance, overall data usage.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li><p>Minimal configuration : just a pluggable Django app.</p></li>
+<li><p>Django model based : No database to create and setup manually. Uses
+<a href="http://south.aeracode.org">South</a>.</p></li>
+<li><p>Files are saved in chunks in order to limit memory usage.</p></li>
+<li><p>Original file names are preserved : No more logo_1.jpg, logo_2.jpg,
+logo_3.jpg "behind the scene" renames. Files a renamed to
+/some_unique_id/original\file\name.ext.</p></li>
+<li><p>Files can be extracted to another File Storage when accessed from the
+web or be served directly from the database. (not recommended, but
+useful for debugging purposes)</p></li>
+<li><p>Basic admin for inspection purposes.</p></li>
+</ul><h2>Caveats</h2>
+
+<ul>
+<li> Django doesn't support blobs yet (planned in 1.6) so file chunks are
+saved in base64, which increases the overall storage requirements.</li>
+</ul><h2>Install</h2>
+
+<p>In your <code>settings.py</code>, add <code>'south'</code> (if you don't use it already)
+and <code>'smartdbstorage'</code> to your <code>INSTALLED_APPS</code>:</p>
+
+<pre><code>INSTALLED_APPS = (
+    ...
+    'south',
+    'smartdbstorage'
+)
+</code></pre>
+
+<p>From the command line:</p>
+
+<pre><code>./manage.py syncdb
+./manage.py migrate smartdbstorage
+</code></pre>
+
+<p>In <code>settings.py</code>, it's a good idea to set global defaults:</p>
+
+<pre><code>SMARTDBSTORAGE_SERVE_DIRECTLY = False  # when accessed from the web files are either served directly or extracted to another file storage
+SMARTDBSTORAGE_EXTRACTION_STORAGE = DEFAULT_FILE_STORAGE
+</code></pre>
+
+<p>In your <code>urls.py</code>, add the following:</p>
+
+<pre><code>(r'^some_prefix/', include('smartdbstorage.urls', namespace='smart_db_storage')),
+</code></pre>
+
+<p>This allows to serve files directly from the database if needed.</p>
+
+<h2>Example usage</h2>
+
+<p>Simply specify a SmartDBStorage instance where you want to use it:</p>
+
+<pre><code>class Article(models.Model):
+    text = models.TextField()
+    image = ImageField(upload_to='articles_images', storage=SmartDBStorage())
+</code></pre>
+
+<p>You can override defaults like this:</p>
+
+<pre><code>class Article(models.Model):
+    text = models.TextField()
+    image = ImageField(upload_to='articles_images', storage=SmartDBStorage(option=dict(extraction_storage=FileSystemStorage())))
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/dperetti">dperetti</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
