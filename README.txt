@@ -20,7 +20,7 @@ Features
 
 * Files are saved in chunks in order to limit memory usage.
 
-* Original file names are preserved : No more logo_1.jpg, logo_2.jpg, logo_3.jpg "behind the scene" renames. Files a renamed to /some_unique_id/original_file_name.ext.
+* Original file names are preserved : no more logo_1.jpg, logo_2.jpg, logo_3.jpg "behind the scene" renames. Files a renamed to /some_unique_id/original_file_name.ext.
 
 * Files can be extracted to another File Storage when accessed from the web or be served directly from the database. (not recommended, but useful for debugging purposes)
 
@@ -42,7 +42,7 @@ In your ``settings.py``, add ``'south'`` (if you don't use it already) and ``'sm
         'smartdbstorage'
     )
 
-In ``settings.py```, it's a good idea to set global defaults::
+In ``settings.py``, it's a good idea to set global defaults::
     
     SMARTDBSTORAGE_SERVE_DIRECTLY = False  # when accessed from the web files are either served directly or extracted to another file storage
     SMARTDBSTORAGE_EXTRACTION_STORAGE = DEFAULT_FILE_STORAGE

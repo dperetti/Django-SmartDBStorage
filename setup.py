@@ -9,7 +9,7 @@ setup(
     author_email='dperetti@lachoseinteractive.net',
     packages=find_packages(),
     #scripts=['bin/xx.py'],
-    url='https://github.com/dperetti/Django-SmartDBStorage',
+    url='http://dperetti.github.com/Django-SmartDBStorage',
     license='LICENSE.txt',
     description='A Django Model based file storage.',
     long_description=open('README.txt').read(),
