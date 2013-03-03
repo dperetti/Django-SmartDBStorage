@@ -14,6 +14,6 @@ setup(
     description='A Django Model based file storage.',
     long_description=open('README.txt').read(),
     install_requires=[
-        South>=0.7.3,
+        'South>=0.7.3'
     ],
 )

@@ -12,7 +12,7 @@ Advantages : everything at the same place, no more broken links, better flexibil
 Disadvantages : performance, overall data usage.
 
 Features
-========
+--------
 
 * Minimal configuration : just a pluggable Django app.
 
@@ -20,7 +20,7 @@ Features
 
 * Files are saved in chunks in order to limit memory usage.
 
-* Original file names are preserved : no more logo_1.jpg, logo_2.jpg, logo_3.jpg "behind the scene" renames. Files a renamed to /some_unique_id/original_file_name.ext.
+* Original file names are preserved : no more logo_1.jpg, logo_2.jpg, logo_3.jpg "behind the scene" renames. (Files are renamed to /some_unique_id/original_file_name.ext)
 
 * Files can be extracted to another File Storage when accessed from the web or be served directly from the database. (not recommended, but useful for debugging purposes)
 
@@ -32,7 +32,7 @@ Caveats
 * Django doesn't support blobs yet (planned in 1.6) so file chunks are saved in base64, which increases the overall storage requirements.
 
 Install
-=======
+-------
 
 In your ``settings.py``, add ``'south'`` (if you don't use it already) and ``'smartdbstorage'`` to your ``INSTALLED_APPS``::
 
