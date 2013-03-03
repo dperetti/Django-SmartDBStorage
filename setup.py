@@ -14,6 +14,6 @@ setup(
     description='A Django Model based file storage.',
     long_description=open('README.txt').read(),
     install_requires=[
-        # "Django >= 1.4",
+        South>=0.7.3,
     ],
 )

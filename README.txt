@@ -1,43 +1,69 @@
-===========
-Towel Stuff
-===========
+=====================
+Django-SmartDBStorage
+=====================
 
-Towel Stuff provides such and such and so and so. You might find
-it most useful for tasks involving <x> and also <y>. Typical usage
-often looks like this::
+SmartDBStorage is a File Storage for Django that stores files in the database using Django Models.
 
-    #!/usr/bin/env python
+When the attachments or images are as important as the other data, you may want to store them in the database for better integrity and consistency.
 
-    from towelstuff import location
-    from towelstuff import utils
+For example, this is specially useful to store original pictures which are displayed using `sorl thumbnail <https://github.com/sorl/sorl-thumbnail>`_.
 
-    if utils.has_towel():
-        print "Your towel is located:", location.where_is_my_towel()
+Advantages : everything at the same place, no more broken links, better flexibility.
+Disadvantages : performance, overall data usage.
 
-(Note the double-colon and 4-space indent formatting above.)
+Features
+========
 
-Paragraphs are separated by blank lines. *Italics*, **bold**,
-and ``monospace`` look like this.
+* Minimal configuration : just a pluggable Django app.
 
+* Django model based : No database to create and setup manually. Uses `South <http://south.aeracode.org>`_.
 
-A Section
-=========
+* Files are saved in chunks in order to limit memory usage.
 
-Lists look like this:
+* Original file names are preserved : No more logo_1.jpg, logo_2.jpg, logo_3.jpg "behind the scene" renames. Files a renamed to /some_unique_id/original_file_name.ext.
 
-* First
+* Files can be extracted to another File Storage when accessed from the web or be served directly from the database. (not recommended, but useful for debugging purposes)
 
-* Second. Can be multiple lines
-  but must be indented properly.
+* Basic admin for inspection purposes.
 
-A Sub-Section
+Caveats
+-------
+
+* Django doesn't support blobs yet (planned in 1.6) so file chunks are saved in base64, which increases the overall storage requirements.
+
+Install
+=======
+
+In your ``settings.py``, add ``'south'`` (if you don't use it already) and ``'smartdbstorage'`` to your ``INSTALLED_APPS``::
+
+    INSTALLED_APPS = (
+        ...
+        'south',
+        'smartdbstorage'
+    )
+
+In ``settings.py```, it's a good idea to set global defaults::
+    
+    SMARTDBSTORAGE_SERVE_DIRECTLY = False  # when accessed from the web files are either served directly or extracted to another file storage
+    SMARTDBSTORAGE_EXTRACTION_STORAGE = DEFAULT_FILE_STORAGE
+
+In your ``urls.py``, add the following::
+
+    (r'^some_prefix/', include('smartdbstorage.urls', namespace='smart_db_storage')),
+
+This allows to serve files directly from the database if needed.
+
+Example usage
 -------------
 
-Numbered lists look like you'd expect:
+Simply specify a SmartDBStorage instance where you want to use it::
 
-1. hi there
+    class Article(models.Model):
+        text = models.TextField()
+        image = ImageField(upload_to='articles_images', storage=SmartDBStorage())
 
-2. must be going
+You can override defaults like this::
 
-Urls are http://like.this and links can be
-written `like this <http://www.example.com/foo/bar>`_.
+    class Article(models.Model):
+        text = models.TextField()
+        image = ImageField(upload_to='articles_images', storage=SmartDBStorage(option=dict(extraction_storage=FileSystemStorage())))
