@@ -11,7 +11,7 @@ class DBStorageFile(File):
         Read the file and yield chunks
         """
         for chunk in self._file.dbfilechunk_set.order_by('order'):
-            yield chunk.data
+            yield chunk.datachunk
 
     def read(self):
         content = ''

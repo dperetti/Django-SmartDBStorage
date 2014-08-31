@@ -13,8 +13,9 @@ from django.utils.text import get_valid_filename
 import sys
 from .file import DBStorageFile
 from .models import DBFile, DBFileChunk, DBPool
+from django.utils.deconstruct import deconstructible
 
-
+@deconstructible
 class SmartDBStorage(Storage):
     def __init__(self, option=None):
         self._extraction_storage = get_class(settings.SMARTDBSTORAGE_EXTRACTION_STORAGE)()
@@ -43,7 +44,7 @@ class SmartDBStorage(Storage):
         prefix, name = name.split('/', 1)
         return DBStorageFile(prefix=prefix, name=name)
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def _save(self, name, content):
         """
         Saves new content to the file specified by name. The content should be a
@@ -70,7 +71,7 @@ class SmartDBStorage(Storage):
             file_chunk = DBFileChunk(
                 dbfile=dbfile,
                 order=i,
-                data=chunk
+                datachunk=chunk
             )
             m.update(chunk)
             file_chunk.save()
