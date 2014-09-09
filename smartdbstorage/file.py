@@ -11,12 +11,13 @@ class DBStorageFile(File):
         Read the file and yield chunks
         """
         for chunk in self._file.dbfilechunk_set.order_by('order'):
-            yield chunk.datachunk
+            yield bytes(chunk.datachunk)
 
     def read(self):
-        content = ''
+        content = bytes(None)
         for chunk in self.chunks():
             content += chunk
+
         return content
 
     @property

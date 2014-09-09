@@ -108,7 +108,7 @@ class SmartDBStorage(Storage):
             logging.error("Add the following to your url patterns :")
             logging.error("(r'^your_url_prefix_to_serve_files/', include('smartdbstorage.urls', namespace='smart_db_storage'))")
 
-            raise ImproperlyConfigured("Pas bon")
+            raise ImproperlyConfigured("SmartDBStorage is set to serve files directly, but urls.py is not configured to do so.")
 
     def get_valid_name(self, name):
         """
