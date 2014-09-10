@@ -3,8 +3,19 @@ from smartdbstorage.models import DBFile
 
 
 class DBStorageFile(File):
-    def __init__(self, prefix, name):
+    def __init__(self, prefix, name, storage, full_name):
+        self.storage = storage
+        self.full_name = full_name
         self._file = DBFile.objects.get(pool__name=prefix, name=name)
+
+    def extracted_file(self):
+        """
+        Convenience method to extract and return the file from the extraction storage.
+        Can be used from the model like this:
+        mymodel.image.file.extracted_file()
+        """
+        fs = self.storage._extract(self.full_name)
+        return fs.open(self.full_name)
 
     def chunks(self, chunk_size=None):
         """

@@ -41,8 +41,8 @@ class SmartDBStorage(Storage):
         """
         Retrieves the specified file from storage.
         """
-        prefix, name = self._get_prefix_and_basename_for_read(name)
-        return DBStorageFile(prefix=prefix, name=name)
+        prefix, _name = self._get_prefix_and_basename_for_read(name)
+        return DBStorageFile(prefix=prefix, name=_name, storage=self, full_name=name)
 
     @transaction.atomic
     def _save(self, name, content):
@@ -85,7 +85,6 @@ class SmartDBStorage(Storage):
 
         return dbfile.pool.name + '/' + dbfile.name
 
-
     def url(self, name):
         """
         Returns an absolute URL where the file's contents can be accessed
@@ -95,10 +94,8 @@ class SmartDBStorage(Storage):
 
         if not self._serve_directly:
 
-            if self._extraction_storage:
-                fs = self._extraction_storage
-                if not fs.exists(name):
-                    fs.save(name, self.open(name))
+            fs = self._extract(name)
+            if fs:
                 return fs.url(name)
 
         try:
@@ -111,6 +108,19 @@ class SmartDBStorage(Storage):
 
             raise ImproperlyConfigured("SmartDBStorage is set to serve files directly, but urls.py is not configured to do so.")
 
+    def _extract(self, name):
+        """
+        Extracts the file from the db to the extraction storage (if it exists) and returns the extraction storage (just
+        for convenience).
+        If you need to extract manually a file, don't use this.
+        See DBStorageFile's extracted_file() method.
+        """
+        if self._extraction_storage:
+            fs = self._extraction_storage
+            if not fs.exists(name):
+                fs.save(name, self.open(name))
+            return fs
+        return False
 
     def _get_prefix_and_basename_for_save(self, name):
         """
