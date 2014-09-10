@@ -33,7 +33,7 @@ class SmartDBStorage(Storage):
             self._serve_directly = False
 
     def _getDBFile(self, name):
-        prefix, name = name.split('/', 1)
+        prefix, name = self._get_prefix_and_basename_for_read(name)
         dbfile = DBFile.objects.get(pool__name=prefix, name=name)
         return dbfile
 
@@ -41,7 +41,7 @@ class SmartDBStorage(Storage):
         """
         Retrieves the specified file from storage.
         """
-        prefix, name = name.split('/', 1)
+        prefix, name = self._get_prefix_and_basename_for_read(name)
         return DBStorageFile(prefix=prefix, name=name)
 
     @transaction.atomic
@@ -51,7 +51,7 @@ class SmartDBStorage(Storage):
         proper File object, ready to be read from the beginning.
         """
 
-        prefix, name = name.split('/', 1)
+        prefix, name = self._get_prefix_and_basename_for_save(name)
 
         original_name = os.path.basename(content.name)
         if original_name is None:
@@ -78,19 +78,20 @@ class SmartDBStorage(Storage):
             i += 1
         dbfile.checksum = m.hexdigest()
 
-        # Store filenames with forward slashes, even on Windows
+        # Store filenames with forward slashes, even on Window.
+        # Insert the id of the dbfile in the path.
         dbfile.name = str(dbfile.pk) + '/' + self.get_valid_name(dbfile.original_name).replace('\\', '/')
         dbfile.save()
 
         return dbfile.pool.name + '/' + dbfile.name
 
-    # These methods are part of the public API, with default implementations.
+
     def url(self, name):
         """
         Returns an absolute URL where the file's contents can be accessed
         directly by a Web browser.
         """
-        prefix, _name = name.split('/', 1)
+        prefix, _name = self._get_prefix_and_basename_for_read(name)
 
         if not self._serve_directly:
 
@@ -110,6 +111,23 @@ class SmartDBStorage(Storage):
 
             raise ImproperlyConfigured("SmartDBStorage is set to serve files directly, but urls.py is not configured to do so.")
 
+
+    def _get_prefix_and_basename_for_save(self, name):
+        """
+        "protected/samples/image.jpg" -> "protected/samples", "image.jpg"
+        """
+        return name.rsplit('/', 1)
+
+    def _get_prefix_and_basename_for_read(self, name):
+        """
+        "protected/samples/256/image.jpg" -> "protected/samples", "256/image.jpg"
+        """
+        ar = name.rsplit('/', 2)
+        return ar[0], '/'.join([ar[1], ar[2]])
+
+    #
+    # These methods are part of the public API, with default implementations.
+    #
     def get_valid_name(self, name):
         """
         Returns a filename, based on the provided filename, that's suitable for
