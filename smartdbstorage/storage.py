@@ -53,9 +53,10 @@ class SmartDBStorage(Storage):
 
         prefix, name = self._get_prefix_and_basename_for_save(name)
 
-        original_name = os.path.basename(content.name)
-        if original_name is None:
+        if content.name is None:
             original_name = os.path.basename(name)
+        else:
+            original_name = os.path.basename(content.name)
 
         pool, created = DBPool.objects.get_or_create(name=prefix)
         dbfile = DBFile(
