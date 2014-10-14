@@ -26,7 +26,7 @@ class DBStorageFile(File):
             yield bytes(chunk.datachunk)
 
     def read(self):
-        content = bytes(None)
+        content = bytes()
         for chunk in self.chunks():
             content += chunk
 

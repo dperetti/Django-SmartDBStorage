@@ -42,8 +42,7 @@ class SmartDBStorage(Storage):
 
     def _getDBFile(self, name):
         prefix, name = self._get_prefix_and_basename_for_read(name)
-        dbfile = DBFile.objects.get(pool__name=prefix, name=name).using(self._database)
-        print dbfile
+        dbfile = DBFile.objects.using(self._database).get(pool__name=prefix, name=name)
         return dbfile
 
     def _open(self, name, mode='rb'):
