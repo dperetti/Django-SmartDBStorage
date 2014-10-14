@@ -11,7 +11,7 @@ def update_chunks(apps, schema_editor):
     import base64
 
     DBFileChunk = apps.get_model("smartdbstorage", "DBFileChunk")
-    for chunk in DBFileChunk.objects.all():
+    for chunk in DBFileChunk.objects.all().using(schema_editor.connection.alias):
         chunk.datachunk = base64.decodestring(chunk._data)
         chunk.save()
 

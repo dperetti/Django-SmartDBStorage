@@ -9,7 +9,6 @@ class DBFileView(View):
 
     def get(self, request, *args, **kwargs):
 
-        print kwargs
         dbfile = None
         try:
             dbfile = DBFile.objects.get(

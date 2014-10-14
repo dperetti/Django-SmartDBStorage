@@ -3,10 +3,11 @@ from smartdbstorage.models import DBFile
 
 
 class DBStorageFile(File):
-    def __init__(self, prefix, name, storage, full_name):
+    def __init__(self, prefix, name, storage, full_name, database=None):
         self.storage = storage
         self.full_name = full_name
-        self._file = DBFile.objects.get(pool__name=prefix, name=name)
+        self.database = database
+        self._file = DBFile.objects.using(database).get(pool__name=prefix, name=name)
 
     def extracted_file(self):
         """
@@ -21,7 +22,7 @@ class DBStorageFile(File):
         """
         Read the file and yield chunks
         """
-        for chunk in self._file.dbfilechunk_set.order_by('order'):
+        for chunk in self._file.dbfilechunk_set.using(self.database).order_by('order'):
             yield bytes(chunk.datachunk)
 
     def read(self):
