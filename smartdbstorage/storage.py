@@ -1,6 +1,5 @@
 import hashlib
 import logging
-from compressor.utils import get_class
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch
@@ -15,6 +14,7 @@ import sys
 from .file import DBStorageFile
 from .models import DBFile, DBFileChunk, DBPool
 from django.utils.deconstruct import deconstructible
+from .utils import get_class
 
 @deconstructible
 class SmartDBStorage(Storage):
@@ -219,3 +219,4 @@ class SmartDBStorage(Storage):
         specified by name.
         """
         raise NotImplementedError()
+
