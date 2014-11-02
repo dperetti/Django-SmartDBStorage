@@ -16,7 +16,6 @@ from .models import DBFile, DBFileChunk, DBPool
 from django.utils.deconstruct import deconstructible
 from .utils import get_class
 
-@deconstructible
 class SmartDBStorage(Storage):
     def __eq__(self, other):  # https://docs.djangoproject.com/en/1.7/topics/migrations/#custom-deconstruct-method
         return True           # (doesn't seem to be called, though)
@@ -39,6 +38,19 @@ class SmartDBStorage(Storage):
             self._database = database
         else:
             self._database = DEFAULT_DB_ALIAS
+
+    def deconstruct(self):
+        """
+        Returns a 3-tuple of class import path, positional arguments,
+        and keyword arguments.
+
+        We don't want to create new migrations when the arguments change, since they are schema independant.
+        """
+        return (
+            '%s.%s' % (self.__class__.__module__, self.__class__.__name__),
+            [],
+            dict(),
+        )
 
     def _getDBFile(self, name):
         prefix, name = self._get_prefix_and_basename_for_read(name)
