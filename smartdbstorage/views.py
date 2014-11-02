@@ -18,13 +18,10 @@ class DBFileView(View):
         except DBFile.DoesNotExist:
             return HttpResponseNotFound()
 
-        content = None
+        content = bytes()
 
         for chunk in dbfile.dbfilechunk_set.order_by('order'):
-            if content is None:
-                content = chunk.datachunk
-            else:
-                content += chunk.datachunk
+            content += bytes(chunk.datachunk)
 
         content_type = None
 
