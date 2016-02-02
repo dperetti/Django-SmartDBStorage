@@ -8,7 +8,6 @@ import re
 from django.core.files.storage import Storage, DefaultStorage, FileSystemStorage
 from django.db import transaction
 from django.db import DEFAULT_DB_ALIAS
-from django.utils.encoding import force_unicode
 from django.utils.text import get_valid_filename
 import sys
 from .file import DBStorageFile
@@ -122,7 +121,7 @@ class SmartDBStorage(Storage):
         try:
             dummy = DBFile(pool__name=prefix, name=_name)  # don't hit the database
             return dummy.get_absolute_url()
-        except NoReverseMatch, e:
+        except NoReverseMatch:
             logging.error("SmartDBStorage is set to serve files directly, but urls.py is not configured to do so.")
             logging.error("Add the following to your url patterns :")
             logging.error("(r'^your_url_prefix_to_serve_files/', include('smartdbstorage.urls', namespace='smart_db_storage'))")
@@ -188,7 +187,7 @@ class SmartDBStorage(Storage):
         dbfile = self._getDBFile(name)
         return dbfile.size
 
-    def get_available_name(self, name):
+    def get_available_name(self, name, max_length):
         """
         Returns a filename that's free on the target storage system, and
         available for new content to be written to.
@@ -231,4 +230,3 @@ class SmartDBStorage(Storage):
         specified by name.
         """
         raise NotImplementedError()
-
